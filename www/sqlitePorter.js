@@ -37,7 +37,9 @@
     var separator = ";\n";
 
     // Matches statements based on semicolons outside of quotes
-    var statementRegEx = /(?!\s|;|$)(?:[^;"']*(?:"(?:\\.|[^\\"])*"|'(?:\\.|[^\\'])*')?)*/g;
+    //var statementRegEx = /(?!\s|;|$)(?:[^;"']*(?:"(?:\\.|[^\\"])*"|'(?:\\.|[^\\'])*')?)*/g;
+    var statementRegExString = `(?!\s|\;|$)(?:[^\;"']*(?:"(?:\\.|[^\\"])*"|'(?:\\.|[^\\'])*')?)*`
+    var statementRegExFlags = 'g'
 
 
     /**
@@ -73,8 +75,14 @@
                 //Clean SQL + split into statements
                 var totalCount, currentCount;
 
+                //Check if a custom separator has been provided
+                if(opts.separator) {
+                    // Replace the semicolon (standard separator) in the RegEx string with the custom separator
+                    statementRegExString = statementRegExString.replace(';', opts.separator);
+                }
                 var statements = removeComments(sql)
-                    .match(statementRegEx);;
+                    .match(RegExp(statementRegEx, statementRegExFlags));
+                
 
                 if(statements === null || (Array.isArray && !Array.isArray(statements)))
                     statements = [];
